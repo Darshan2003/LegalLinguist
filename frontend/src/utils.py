@@ -1,4 +1,7 @@
 import streamlit as st
+from src.database import Database
+
+db = Database(st.secrets['dbkey'])
 
 
 def page_init():
@@ -18,4 +21,3 @@ def page_init():
         """,
         unsafe_allow_html=True,
     )
-    # st.sidebar.markdown("# Legal Linguist")

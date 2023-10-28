@@ -86,3 +86,11 @@ class Chat():
                 'role': 'assistant',
                 'label': label
             })
+
+    def clear_chat(self):
+        st.session_state['messages'] = []
+        st.session_state['doc'] = None
+        del st.session_state['show_anim']
+        self.message_by_assistant(
+            'Hello there! I am your personal assistant. How can I help you?')
+        self.message_by_assistant('Upload your file here:', type='file')
