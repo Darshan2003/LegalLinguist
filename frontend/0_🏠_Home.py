@@ -6,6 +6,7 @@ from streamlit_lottie import st_lottie
 
 
 page_init()
+st.session_state['verif_email'] = 'kenneth@mail.com'
 
 
 chat = Chat()

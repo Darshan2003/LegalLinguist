@@ -24,27 +24,27 @@ def page_init():
         unsafe_allow_html=True,
     )
 
-    if 'authpage' not in st.session_state:
-        st.session_state['authpage'] = 'login'
+    # if 'authpage' not in st.session_state:
+    #     st.session_state['authpage'] = 'login'
 
-    if st.session_state['authpage'] and 'verif_email' not in st.session_state:
-        if st.session_state['authpage'] == 'login':
-            login_page()
+    # if st.session_state['authpage'] and 'verif_email' not in st.session_state:
+    #     if st.session_state['authpage'] == 'login':
+    #         login_page()
 
-            st.write("Don't have an account ? ")
-            btn = st.button('Register')
-            if btn:
-                st.session_state['authpage'] = 'register'
-                st.rerun()
-            st.stop()
-        elif st.session_state['authpage'] == 'register':
-            register_page()
-            st.write("Already have an account ? ")
-            btn = st.button('Login')
-            if btn:
-                st.session_state['authpage'] = 'login'
-                st.rerun()
-            st.stop()
+    #         st.write("Don't have an account ? ")
+    #         btn = st.button('Register')
+    #         if btn:
+    #             st.session_state['authpage'] = 'register'
+    #             st.rerun()
+    #         st.stop()
+    #     elif st.session_state['authpage'] == 'register':
+    #         register_page()
+    #         st.write("Already have an account ? ")
+    #         btn = st.button('Login')
+    #         if btn:
+    #             st.session_state['authpage'] = 'login'
+    #             st.rerun()
+    #         st.stop()
 
 
 def register_action():
@@ -69,7 +69,7 @@ def login_action():
 
     if login_user(db, email, password):
         st.success("Logged in successfully. Redirecting to home page...")
-        time.sleep(2)
+        time.sleep(1)
         st.session_state['authpage'] = None
         st.session_state['verif_email'] = email
     else:

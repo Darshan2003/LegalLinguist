@@ -1,4 +1,5 @@
 import streamlit as st
+import requests
 
 
 class Chat():
@@ -6,6 +7,8 @@ class Chat():
     def __init__(self, processinput=lambda x: print(x)) -> None:
         self.processinput = processinput
         self.input = None
+        self.URL = 'https://7bf9-34-91-49-144.ngrok-free.app'
+
         if 'doc' not in st.session_state:
             st.session_state['doc'] = None
 
@@ -28,6 +31,7 @@ class Chat():
                     st.session_state['doc'] = st.file_uploader(
                         message['text'], accept_multiple_files=True)
                     if st.session_state['doc'] is not None and len(st.session_state['doc']) > 0:
+                        self.upload_file(0)
                         with st.spinner("Uploading..."):
                             st.write("Processing the uploaded file...")
                             st.success("Upload and processing complete!")
@@ -37,6 +41,25 @@ class Chat():
                             st.image(message['image'])
                     else:
                         st.image(message['image'])
+
+    def upload_file(self, index):
+        single_file = st.session_state['doc'][index]
+        print(single_file)
+        response = requests.post(
+            f'{self.URL}/upload_files',
+            files={
+                'file': (single_file.name, single_file.read())
+            },
+            data={
+                'email': st.session_state['verif_email']
+            }
+        )
+        print(f'{self.URL}/upload_files')
+        print(response.json())
+        if response.status_code == 200:
+            st.write("You've successfully uploaded a file!")
+        else:
+            st.write("Failed to upload file.")
 
     def handle_input(self):
         self.input = st.chat_input('Type a message...')
