@@ -1,43 +1,43 @@
 import streamlit as st
-import pymongo
 import hmac
 import hashlib
+from pymongo import MongoClient
+
+
+@st.cache_resource
+def get_db():
+    return MongoClient(st.secrets['dbkey'])
 
 
 def hash(msg):
-    return hmac.new(st.secrets['hashkey'], msg.encode('utf-8'), hashlib.sha256).hexdigest()
+    return hmac.new(str.encode(st.secrets['hashkey']), str.encode(msg), hashlib.sha256).hexdigest()
 
 
 def compare_hash(msg, hashed):
     return hmac.compare_digest(hash(msg), hashed)
 
 
-class Database():
-    @st.cache_resource
-    def __init__(_self, key) -> None:
-        _self.connection = pymongo.MongoClient(key)
-        _self.db = _self.connection['test']
-        _self.users = _self.db['users']
+def register_user(conn, name, email, password):
+    db = conn['test']
+    users = db['users']
+    if users.find_one({'email': email}):
+        return False
+    users.insert_one({
+        'name': name,
+        'email': email,
+        'password': hash(password)
+    })
+    return True
 
-    def register_user(self, name, email, password):
-        exists = self.users.find_one({'email': email})
 
-        if exists is not None:
-            return False
+def login_user(conn, email, password):
+    db = conn['test']
+    users = db['users']
 
-        self.users.insert_one({
-            'name': name,
-            'email': email,
-            'password': hash(password)
-        })
-
+    user = users.find_one({'email': email})
+    print(user)
+    if not user:
+        return False
+    if compare_hash(password, user['password']):
         return True
-
-    def login_user(self, email, password):
-        user = self.users.find_one({'email': email})
-        if user is None:
-            return False
-
-        st.session_state['verif_email'] = user['email']
-
-        return compare_hash(password, user['password'])
+    return False
