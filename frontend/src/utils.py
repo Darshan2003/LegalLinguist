@@ -58,6 +58,7 @@ def register_action():
         st.session_state['authpage'] = 'login'
     else:
         st.error("User already exists.")
+        time.sleep(1)
 
 
 def login_action():
@@ -73,6 +74,7 @@ def login_action():
         st.session_state['verif_email'] = email
     else:
         st.error("Invalid credentials.")
+        time.sleep(1)
 
 
 def login_page():

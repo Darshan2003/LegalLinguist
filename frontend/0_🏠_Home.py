@@ -16,6 +16,8 @@ def processinput(input: str):
         return
     if input.split(' ')[0] == '/search':
         pdfops.search_logic(chat, input)
+    else:
+        chat.message_by_assistant('Hello how can I help.')
 
 
 chat.set_processinput(processinput)

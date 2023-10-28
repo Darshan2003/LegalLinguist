@@ -12,7 +12,7 @@ def search_and_highlight(chat, doc, text):
             page.add_highlight_annot(quads)
             chat.message_by_assistant(
                 page.get_pixmap().tobytes('png'), type='image', label="Found " + str(len(quads)) +
-                " matches in page " + str(page.number) + ".")
+                " matches in page " + str(page.number + 1) + ".")
     if not found_something:
         chat.message_by_assistant("No matches found.")
 
