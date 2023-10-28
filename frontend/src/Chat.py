@@ -2,7 +2,6 @@ import streamlit as st
 
 
 class Chat():
-    doc = None
 
     def __init__(self) -> None:
         if 'doc' not in st.session_state:
@@ -21,8 +20,9 @@ class Chat():
                 if message['type'] == 'text':
                     st.write(message['text'])
                 elif message['type'] == 'file':
-                    st.session_state['doc'] = st.file_uploader(message['text'])
-                    if st.session_state['doc'] is not None:
+                    st.session_state['doc'] = st.file_uploader(
+                        message['text'], accept_multiple_files=True)
+                    if st.session_state['doc'] is not None and len(st.session_state['doc']) > 0:
                         with st.spinner("Uploading..."):
                             st.write("Processing the uploaded file...")
                             st.success("Upload and processing complete!")
