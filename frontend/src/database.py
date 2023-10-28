@@ -43,11 +43,8 @@ def login_user(conn, email, password):
     return False
 
 
-def upload_file_details(conn, email, fileUrl):
+def upload_file_details(conn, links):
     db = conn['test']
     files = db['files']
 
-    files.insert_one({
-        'email': email,
-        'fileUrl': fileUrl
-    })
+    files.insert_many(links)
