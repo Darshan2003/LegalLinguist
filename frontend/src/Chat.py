@@ -3,7 +3,9 @@ import streamlit as st
 
 class Chat():
 
-    def __init__(self) -> None:
+    def __init__(self, processinput=lambda x: print(x)) -> None:
+        self.processinput = processinput
+        self.input = None
         if 'doc' not in st.session_state:
             st.session_state['doc'] = None
 
@@ -12,6 +14,9 @@ class Chat():
             self.message_by_assistant(
                 'Hello there! I am your personal assistant. How can I help you?')
             self.message_by_assistant('Upload your file here:', type='file')
+
+    def set_processinput(self, processinput):
+        self.processinput = processinput
 
     def render_ui(self):
         self.handle_input()
@@ -26,13 +31,15 @@ class Chat():
                         with st.spinner("Uploading..."):
                             st.write("Processing the uploaded file...")
                             st.success("Upload and processing complete!")
+                elif message['type'] == 'image':
+                    st.image(message['image'])
 
     def handle_input(self):
-        input = st.chat_input('Type a message...')
-        if input and len(st.session_state['doc']) == 0:
+        self.input = st.chat_input('Type a message...')
+        if self.input and len(st.session_state['doc']) == 0:
             st.session_state['messages'].append({
                 'type': 'text',
-                'text': input,
+                'text': self.input,
                 'role': 'user',
             })
             st.session_state['messages'].append({
@@ -40,17 +47,13 @@ class Chat():
                 'text': 'Please upload your file first.',
                 'role': 'assistant',
             })
-        elif input:
+        elif self.input:
             st.session_state['messages'].append({
                 'type': 'text',
-                'text': input,
+                'text': self.input,
                 'role': 'user',
             })
-            st.session_state['messages'].append({
-                'type': 'text',
-                'text': 'Hello there! I am your personal assistant. How can I help you?',
-                'role': 'assistant',
-            })
+        self.processinput(self.input)
 
     def message_by_user(self, message):
         st.session_state['messages'].append({
@@ -70,5 +73,11 @@ class Chat():
             st.session_state['messages'].append({
                 'type': 'text',
                 'text': message,
+                'role': 'assistant',
+            })
+        elif type == 'image':
+            st.session_state['messages'].append({
+                'type': 'image',
+                'image': message,
                 'role': 'assistant',
             })
