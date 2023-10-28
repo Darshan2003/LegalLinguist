@@ -10,7 +10,7 @@ chat = Chat()
 
 
 def processinput(input: str):
-    if not input:
+    if not input or st.session_state['doc'] is None or len(st.session_state['doc']) == 0:
         return
     if input.split(' ')[0] == '/search':
         pdfops.search_logic(chat, input)

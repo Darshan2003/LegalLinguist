@@ -32,7 +32,11 @@ class Chat():
                             st.write("Processing the uploaded file...")
                             st.success("Upload and processing complete!")
                 elif message['type'] == 'image':
-                    st.image(message['image'])
+                    if message['label'] != '':
+                        with st.expander(message['label']):
+                            st.image(message['image'])
+                    else:
+                        st.image(message['image'])
 
     def handle_input(self):
         self.input = st.chat_input('Type a message...')
@@ -62,7 +66,7 @@ class Chat():
             'role': 'user',
         })
 
-    def message_by_assistant(self, message, type='text'):
+    def message_by_assistant(self, message, type='text', label=''):
         if type == 'file':
             st.session_state['messages'].append({
                 'type': 'file',
@@ -80,4 +84,5 @@ class Chat():
                 'type': 'image',
                 'image': message,
                 'role': 'assistant',
+                'label': label
             })
