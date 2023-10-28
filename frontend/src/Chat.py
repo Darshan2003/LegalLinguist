@@ -29,7 +29,7 @@ class Chat():
 
     def handle_input(self):
         input = st.chat_input('Type a message...')
-        if input and st.session_state['doc'] == None:
+        if input and len(st.session_state['doc']) == 0:
             st.session_state['messages'].append({
                 'type': 'text',
                 'text': input,
