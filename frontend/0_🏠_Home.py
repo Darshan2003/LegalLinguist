@@ -16,7 +16,6 @@ def processinput(input: str):
    if input and 'id' in st.session_state.keys():
     uid = st.session_state['id']
     response = requests.get(f"https://api.jugalbandi.ai/query-with-langchain-gpt3-5?query_string={input}&uuid_number={uid}").json()
-    st.write(response)
     chat.message_by_assistant(response['answer'])
     # if input.split(' ')[0] == '/search':
     #     pdfops.search_logic(chat, input)

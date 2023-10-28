@@ -11,7 +11,7 @@ class Chat():
 
         self.processinput = processinput
         self.input = None
-        self.URL = 'https://3179-35-243-251-208.ngrok-free.app'
+        self.URL = 'https://c651-34-145-110-134.ngrok-free.app'
 
         if 'doc' not in st.session_state:
             st.session_state['doc'] = None
@@ -34,7 +34,7 @@ class Chat():
             response = requests.get(url)
             filename = url.split('/')[-1]
             files.append(('files', (filename, response.content)))
-        response = requests.post('https://api.jugalbandi.ai/upload-files', files=files)
+        response = requests.post('https://api.jugalbandi.ai/upload-files', files=files).json()
         if 'uuid_number' in response.keys():
             return response['uuid_number']
         return "Error"
@@ -78,8 +78,9 @@ class Chat():
                 'email': st.session_state['verif_email']
             }
         )
+        print(response.text)
         result = response.json()
-
+        
         to_insert = []
         links = []
         for file in uploaded_files:
@@ -166,10 +167,11 @@ class Chat():
         self.message_by_assistant('Upload your file here:', type='file')
 
     def upload_create_embeding(self):
-        # if self.uploaded_files is not None and len(self.uploaded_files) > 0:
-        #     with st.spinner("Uploading and processing the file..."):
-        #         self.id = self.upload_file(self.uploaded_files[-1])
-        st.session_state['id'] ='d32e3a0e-75c3-11ee-b75b-42004e494300'
+        if self.uploaded_files is not None and len(self.uploaded_files) > 0:
+            with st.spinner("Uploading and processing the file..."):
+                
+                st.session_state['id'] =self.upload_file(self.uploaded_files[-1])
+                # st.session_state['id'] ='d32e3a0e-75c3-11ee-b75b-42004e494300'
         i = 0
 
 

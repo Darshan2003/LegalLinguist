@@ -2,7 +2,7 @@ import streamlit as st
 import hmac
 import hashlib
 from pymongo import MongoClient
-
+import pandas as pd
 
 @st.cache_resource
 def get_db():
@@ -48,3 +48,10 @@ def upload_file_details(conn, links):
     files = db['files']
 
     files.insert_many(links)
+
+
+def get_doc_names(conn, email):
+    db = conn['test']
+    files = db['files']
+    list_of_files = files.find({'email': email})
+    return(list(pd.DataFrame(list(list_of_files))['fileUrl']))
