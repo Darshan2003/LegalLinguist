@@ -2,6 +2,8 @@ import streamlit as st
 import requests
 import base64
 import time
+from src.database import upload_file_details, get_db
+from src.utils import db
 
 
 class Chat():
@@ -36,8 +38,7 @@ class Chat():
                         message['text'], accept_multiple_files=True)
                     if uploaded_files is not None and len(uploaded_files) > 0:
                         with st.spinner("Uploading and processing the file..."):
-                            self.upload_file()
-                            st.success("File processing complete!")
+                            self.upload_file(uploaded_files)
 
                 elif message['type'] == 'image':
                     if message['label'] != '':
@@ -46,33 +47,44 @@ class Chat():
                     else:
                         st.image(message['image'])
 
-    def upload_file(self):
+    def upload_file(self, uploaded_files):
         # single_file = st.session_state['doc'][index]
-        if st.session_state['doc'] is None or len(st.session_state['doc']) == 0:
+        if uploaded_files is None or len(uploaded_files) == 0:
+            st.write("File not selected")
             return
 
-        single_file = st.session_state['doc'][0]
-        print(single_file)
+        st.session_state['doc'] = uploaded_files
+        single_file = uploaded_files[0]
         if not single_file or single_file == None:
             st.write("File not selected")
             return
 
-        response = requests.post(
-            f'{self.URL}/uploadfiles',
-            files={
-                'files': (single_file.name, single_file.read())
-            },
-            data={
-                'email': st.session_state['verif_email']
-            }
+        # response = requests.post(
+        #     f'{self.URL}/uploadfiles',
+        #     files={
+        #         'files': (single_file.name, single_file.read())
+        #     },
+        #     data={
+        #         'email': st.session_state['verif_email']
+        #     }
+        # )
+        # result = response.json()
+
+        link = f'https://railrakshak.s3.ap-south-1.amazonaws.com/{st.session_state["verif_email"]}{single_file.name}'
+        # if result['SUCCESS'] == 'PDF CREATED':
+        #     st.success("File uploaded successfully!")
+        #     st.session_state[
+        #         'doc_link'] = link
+        #     doc = requests.get(
+        #         st.session_state['doc_link'], stream=True).content
+        #     pdf_display = F'<iframe src="{base64.b64encode(doc).decode("utf-8")}" width="700" height="1000" type="application/pdf"></iframe>'
+
+        #     st.markdown(pdf_display, unsafe_allow_html=True)
+
+        upload_file_details(
+            db, st.session_state['verif_email'], link
         )
-        result = response.json()
-        if result['SUCCESS'] == 'PDF CREATED':
-            st.session_state[
-                'doc_link'] = f'https://railrakshak.s3.ap-south-1.amazonaws.com/{st.session_state["verif_email"]}{single_file.name}'
-            st.write(st.session_state['doc_link'])
-            doc = requests.get(st.session_state['doc_link'], stream=True).raw
-            pdf_display = F'<iframe src="{st.session_state["doc_link"]}" width="700" height="1000" type="application/pdf"></iframe>'
+
         # # print(response.json())
         # if response.status_code == 200:
         #     st.write("You've successfully uploaded a file!")

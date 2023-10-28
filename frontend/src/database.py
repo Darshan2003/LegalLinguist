@@ -41,3 +41,13 @@ def login_user(conn, email, password):
     if compare_hash(password, user['password']):
         return True
     return False
+
+
+def upload_file_details(conn, email, fileUrl):
+    db = conn['test']
+    files = db['files']
+
+    files.insert_one({
+        'email': email,
+        'fileUrl': fileUrl
+    })
