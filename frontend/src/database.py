@@ -2,7 +2,7 @@ import streamlit as st
 import hmac
 import hashlib
 from pymongo import MongoClient
-
+import pandas as pd
 
 @st.cache_resource
 def get_db():
@@ -43,11 +43,15 @@ def login_user(conn, email, password):
     return False
 
 
-def upload_file_details(conn, email, fileUrl):
+def upload_file_details(conn, links):
     db = conn['test']
     files = db['files']
 
-    files.insert_one({
-        'email': email,
-        'fileUrl': fileUrl
-    })
+    files.insert_many(links)
+
+
+def get_doc_names(conn, email):
+    db = conn['test']
+    files = db['files']
+    list_of_files = files.find({'email': email})
+    return(list(pd.DataFrame(list(list_of_files))['fileUrl']))
