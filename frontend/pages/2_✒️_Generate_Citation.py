@@ -27,9 +27,9 @@ if uploaded and the_text:
         input = "Find the statement that relates to the following statement the most if there is nothing similar inform me, the statement: "+ the_text
         #     response = requests.get(f"https://api.jugalbandi.ai/query-with-langchain-gpt3-5?query_string={input}&uuid_number={uid}").json()
         uid = '777c92f6-7617-11ee-b88c-42004e494300'
-        response = requests.get(f"https://api.jugalbandi.ai/query-with-langchain-gpt3-5?query_string={input}&uuid_number={uid}").json()
+        response = requests.get(f"https://550c-35-247-99-72.ngrok-free.app/?query_string={input}&uuid_number={uid}").json()
         input = "Return only one word, the year of the case"
-        response2 = requests.get(f"https://api.jugalbandi.ai/query-with-langchain-gpt3-5?query_string={input}&uuid_number={uid}").json()
+        response2 = requests.get(f"https://550c-35-247-99-72.ngrok-free.app/?query_string={input}&uuid_number={uid}").json()
         st.write(response['answer'])
         st.write(f"Citation Format: {response['source_text'][0]['source_text_name'][:-5] }({response2['answer']})")
             
