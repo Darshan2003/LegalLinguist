@@ -4,6 +4,7 @@ from src.utils import page_init
 import src.pdfops as pdfops
 from streamlit_lottie import st_lottie
 import requests
+import io
 import json
 import spacy
 
@@ -18,8 +19,8 @@ def processinput(input: str):
    if input and 'id' in st.session_state.keys():
     uid = st.session_state['id']
     response = requests.get(f"https://api.jugalbandi.ai/query-with-langchain-gpt3-5?query_string={input}&uuid_number={uid}").json()
+    
     sample_text =  response['answer']
-    # sample_text =  "The given text discusses the issue of summary adjudication in a patent infringement suit and the need for a proper trial with evidence. It mentions that the Division Bench should not have examined the counter claim itself, as it should have been decided by the Single Judge. It also states that summary adjudication of a technically complex suit without expert evidence is not desirable or permissible. The text emphasizes the importance of a detailed procedure, framing of issues, and trial with evidence in a civil suit."
     with open('glossary.json', 'r') as f:
         glossary = f.read()
     glossary = json.loads(glossary)
@@ -43,7 +44,26 @@ def processinput(input: str):
         for j in glossary.keys():
             if i in j:
                 helper +="<b>" +j + " : " + "</b>" + glossary[j] + "<br/> " 
+    
+   
+    
+    if len(response['source_text']) == 0:
+        chat.message_by_assistant(sample_text, type='glossary', help=helper)
+        return
+    
+    
+    
+    sauce = response['source_text'][0]
+    sauce['source_text_name'] = 'kenneth@mail.comgoa.pdf'
+    toFind = sauce['chunks'][0]
+    # toFind = 'The subject patent claims the use of Bacillus thuringiensisstrain and development of two genes designated Cry2Aa and Cry2Ab'
+    
+    fileUrl = f'https://railrakshak.s3.ap-south-1.amazonaws.com/{sauce["source_text_name"]}'
+    pdfResp = requests.get(fileUrl)
+    stream = io.BytesIO(pdfResp.content)
     chat.message_by_assistant(sample_text, type='glossary', help=helper)
+    pdfops.search_and_highlight(chat, stream, toFind.split('.')[0], True)
+    
    
 
 
@@ -59,7 +79,7 @@ if clearbtn:
     chat.clear_chat()
 
 
-clearbtn = st.sidebar.button(':heavy_plus_sign: Create Embedings')
+clearbtn = st.sidebar.button(':heavy_plus_sign: Create Embeddings')
 if clearbtn:
     chat.upload_create_embeding()
 
