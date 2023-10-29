@@ -5,13 +5,68 @@ import time
 from src.database import upload_file_details, get_db
 from src.utils import db
 
+language_codes = {
+    'Arabic': 'ar_AR',
+    'Czech': 'cs_CZ',
+    'German': 'de_DE',
+    'English': 'en_XX',
+    'Spanish': 'es_XX',
+    'Estonian': 'et_EE',
+    'Finnish': 'fi_FI',
+    'French': 'fr_XX',
+    'Gujarati': 'gu_IN',
+    'Hindi': 'hi_IN',
+    'Italian': 'it_IT',
+    'Japanese': 'ja_XX',
+    'Kazakh': 'kk_KZ',
+    'Korean': 'ko_KR',
+    'Lithuanian': 'lt_LT',
+    'Latvian': 'lv_LV',
+    'Burmese': 'my_MM',
+    'Nepali': 'ne_NP',
+    'Dutch': 'nl_XX',
+    'Romanian': 'ro_RO',
+    'Russian': 'ru_RU',
+    'Sinhala': 'si_LK',
+    'Turkish': 'tr_TR',
+    'Vietnamese': 'vi_VN',
+    'Chinese': 'zh_CN',
+    'Afrikaans': 'af_ZA',
+    'Azerbaijani': 'az_AZ',
+    'Bengali': 'bn_IN',
+    'Persian': 'fa_IR',
+    'Hebrew': 'he_IL',
+    'Croatian': 'hr_HR',
+    'Indonesian': 'id_ID',
+    'Georgian': 'ka_GE',
+    'Khmer': 'km_KH',
+    'Macedonian': 'mk_MK',
+    'Malayalam': 'ml_IN',
+    'Mongolian': 'mn_MN',
+    'Marathi': 'mr_IN',
+    'Polish': 'pl_PL',
+    'Pashto': 'ps_AF',
+    'Portuguese': 'pt_XX',
+    'Swedish': 'sv_SE',
+    'Swahili': 'sw_KE',
+    'Tamil': 'ta_IN',
+    'Telugu': 'te_IN',
+    'Thai': 'th_TH',
+    'Tagalog': 'tl_XX',
+    'Ukrainian': 'uk_UA',
+    'Urdu': 'ur_PK',
+    'Xhosa': 'xh_ZA',
+    'Galician': 'gl_ES',
+    'Slovene': 'sl_SI'
+}
+
 
 class Chat():
     def __init__(self, processinput=lambda x: print(x)) -> None:
 
         self.processinput = processinput
         self.input = None
-        self.URL = 'https://c651-34-145-110-134.ngrok-free.app'
+        self.URL = 'https://e303-34-141-246-140.ngrok-free.app'
 
         if 'doc' not in st.session_state:
             st.session_state['doc'] = None
@@ -53,7 +108,8 @@ class Chat():
                         message['text'], accept_multiple_files=True)
                     if temp_file is not None:
                         self.uploaded_files.append(temp_file)
-                    
+                        st.session_state['language']  = st.selectbox('Enter the language', language_codes.keys())
+
 
                 elif message['type'] == 'image':
                     if message['label'] != '':
@@ -83,7 +139,8 @@ class Chat():
             f'{self.URL}/uploadfiles',
             files= files,
             data={
-                'email': st.session_state['verif_email']
+                'email': st.session_state['verif_email'],
+                'lang': language_codes[st.session_state['language']],
             }
         )
         print(response.text)
