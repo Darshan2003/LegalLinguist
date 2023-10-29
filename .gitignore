@@ -1,1 +1,5 @@
 secrets.toml
+myenv/
+.streamlit/
+frontend/src/__pycache__/
+*/env

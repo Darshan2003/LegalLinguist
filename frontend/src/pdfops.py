@@ -1,7 +1,6 @@
 import streamlit as st
 import fitz
 import re
-import nltk
 
 def normalize_text(text):
     text = re.sub(r"\s+", "", text)
@@ -49,8 +48,8 @@ def search_and_highlight(chat, doc, text, isStream = False):
                     ogtext = ' '.join(word_arr_forward[:-1])
                     word_arr_forward = word_arr_forward[:-1]
             chat.message_by_assistant(
-                page.get_pixmap().tobytes('png'), type='image', label="Found" +
-                " matches in page " + str(page.number + 1) + ".")
+                page.get_pixmap().tobytes('png'), type='image', label="Source:" +
+                " Page " + str(page.number + 1) + ".")
             found_something = True
 
     
