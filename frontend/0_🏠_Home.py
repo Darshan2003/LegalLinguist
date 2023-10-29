@@ -20,7 +20,7 @@ chat = Chat()
 def processinput(input: str):
    if input and 'id' in st.session_state.keys():
     uid = st.session_state['id']
-    response = requests.get(f"https://api.jugalbandi.ai/query-with-langchain-gpt3-5?query_string={input}&uuid_number={uid}").json()
+    response = requests.get(f"https://550c-35-247-99-72.ngrok-free.app/?query_string={input}&uuid_number={uid}").json()
     
     sample_text =  response['answer']
     with open('glossary.json', 'r') as f:
