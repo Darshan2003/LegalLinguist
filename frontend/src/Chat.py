@@ -2,9 +2,10 @@ import streamlit as st
 import requests
 import base64
 import time
-from src.database import upload_file_details, get_db
+from src.database import upload_file_details, get_db, delete_all_records
 from src.utils import db
 
+conn = get_db()
 language_codes = {
     'Arabic': 'ar_AR',
     'Czech': 'cs_CZ',
@@ -66,7 +67,7 @@ class Chat():
 
         self.processinput = processinput
         self.input = None
-        self.URL = 'https://e303-34-141-246-140.ngrok-free.app'
+        self.URL = 'https://6952-34-83-51-35.ngrok-free.app'
 
         if 'doc' not in st.session_state:
             st.session_state['doc'] = None
@@ -237,8 +238,9 @@ class Chat():
         self.message_by_assistant(
             'Hello there! I am your personal assistant. How can I help you?')
         self.message_by_assistant('Upload your file here:', type='file')
+        delete_all_records(conn, st.session_state['verif_email'])
 
-def upload_create_embeding(self):
+    def upload_create_embeding(self):
         if self.uploaded_files is not None and len(self.uploaded_files) > 0:
             with st.spinner("Uploading and processing the file..."):
                 st.session_state['id'] =self.upload_file(self.uploaded_files[-1])

@@ -54,4 +54,13 @@ def get_doc_names(conn, email):
     db = conn['test']
     files = db['files']
     list_of_files = files.find({'email': email})
-    return(list(pd.DataFrame(list(list_of_files))['fileUrl']))
+    l = list(list_of_files)
+    if len(l) >0:
+        return(list(pd.DataFrame(l)['fileUrl']))
+    else:
+        return([])
+
+def delete_all_records(conn, email):
+    db = conn['test']
+    files = db['files']
+    files.delete_many({'email': email})

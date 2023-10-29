@@ -8,6 +8,8 @@ import io
 import json
 import spacy
 
+# st.set_page_config(initial_sidebar_state='collapsed')
+
 page_init()
 st.session_state['verif_email'] = 'kenneth@mail.com'
 
@@ -54,7 +56,7 @@ def processinput(input: str):
     
     
     sauce = response['source_text'][0]
-    sauce['source_text_name'] = 'kenneth@mail.comgoa.pdf'
+    # st.write(response)
     toFind = sauce['chunks'][0]
     # toFind = 'The subject patent claims the use of Bacillus thuringiensisstrain and development of two genes designated Cry2Aa and Cry2Ab'
     
@@ -79,8 +81,8 @@ if clearbtn:
     chat.clear_chat()
 
 
-clearbtn = st.sidebar.button(':heavy_plus_sign: Create Embeddings')
-if clearbtn:
+uploadbtn = st.sidebar.button(':heavy_plus_sign: Create Embeddings')
+if uploadbtn:
     chat.upload_create_embeding()
 
 chat.render_ui()
