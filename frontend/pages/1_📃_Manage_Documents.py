@@ -16,18 +16,7 @@ for i in filesUrls:
         pdf = requests.get(i).content
         pdf_base64 = base64.b64encode(pdf).decode('utf-8')
         st.markdown(
-    F'<iframe src="data:application/pdf;base64,{pdf_base64}" width="700" height="1000" type="application/pdf"></iframe>', unsafe_allow_html=True)
+    F'<iframe src="data:application/pdf;base64,{pdf_base64}" width="100%" height="1000" type="application/pdf"></iframe>', unsafe_allow_html=True)
     
-    # with st.expander(f"## {i}"):
-        
-        
-    #     with open(i, "rb") as f:
-    #         base64_pdf = base64.b64encode(f.read()).decode('utf-8')
-
-    #     # Embedding PDF in HTML
-    #     pdf_display = F'<embed src="data:application/pdf;base64,{base64_pdf}" width="100%" height="1000" type="application/pdf">'
-
-    #     # Displaying File
-    #     st.markdown(pdf_display, unsafe_allow_html=True)
 
 st.button("Clear All", key=i)

@@ -62,6 +62,14 @@ class Chat():
                     else:
                         st.image(message['image'])
 
+                elif message['type'] == 'glossary':
+                    st.write(message['text'])
+                    if help != '':
+                        with st.expander("Glossary"):
+                            st.markdown( message['help'],unsafe_allow_html=True)
+                        
+
+
     def upload_file(self, uploaded_files):
         # single_file = st.session_state['doc'][index]
         if uploaded_files is None or len(uploaded_files) == 0:
@@ -137,7 +145,7 @@ class Chat():
             'role': 'user',
         })
 
-    def message_by_assistant(self, message, type='text', label=''):
+    def message_by_assistant(self, message, type='text', label='', help=''):
         if type == 'file':
             st.session_state['messages'].append({
                 'type': 'file',
@@ -157,6 +165,13 @@ class Chat():
                 'role': 'assistant',
                 'label': label
             })
+        elif type=='glossary':
+            st.session_state['messages'].append({
+                'type': 'glossary',
+                'text': message,
+                'role': 'assistant',
+                'help': help
+            })
 
     def clear_chat(self):
         st.session_state['messages'] = []
@@ -167,11 +182,11 @@ class Chat():
         self.message_by_assistant('Upload your file here:', type='file')
 
     def upload_create_embeding(self):
-        if self.uploaded_files is not None and len(self.uploaded_files) > 0:
-            with st.spinner("Uploading and processing the file..."):
+        # if self.uploaded_files is not None and len(self.uploaded_files) > 0:
+        #     with st.spinner("Uploading and processing the file..."):
                 
-                st.session_state['id'] =self.upload_file(self.uploaded_files[-1])
-                # st.session_state['id'] ='d32e3a0e-75c3-11ee-b75b-42004e494300'
+        #         st.session_state['id'] =self.upload_file(self.uploaded_files[-1])
+        st.session_state['id'] ='fe11f67c-75e4-11ee-b88c-42004e494300'
         i = 0
 
 

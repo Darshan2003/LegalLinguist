@@ -4,6 +4,8 @@ from src.utils import page_init
 import src.pdfops as pdfops
 from streamlit_lottie import st_lottie
 import requests
+import json
+import spacy
 
 page_init()
 st.session_state['verif_email'] = 'kenneth@mail.com'
@@ -16,11 +18,34 @@ def processinput(input: str):
    if input and 'id' in st.session_state.keys():
     uid = st.session_state['id']
     response = requests.get(f"https://api.jugalbandi.ai/query-with-langchain-gpt3-5?query_string={input}&uuid_number={uid}").json()
-    chat.message_by_assistant(response['answer'])
-    # if input.split(' ')[0] == '/search':
-    #     pdfops.search_logic(chat, input)
-    # else:
-    #     chat.message_by_assistant('Hello how can I help.')
+    sample_text =  response['answer']
+    # sample_text =  "The given text discusses the issue of summary adjudication in a patent infringement suit and the need for a proper trial with evidence. It mentions that the Division Bench should not have examined the counter claim itself, as it should have been decided by the Single Judge. It also states that summary adjudication of a technically complex suit without expert evidence is not desirable or permissible. The text emphasizes the importance of a detailed procedure, framing of issues, and trial with evidence in a civil suit."
+    with open('glossary.json', 'r') as f:
+        glossary = f.read()
+    glossary = json.loads(glossary)
+    
+    nlp = spacy.load("en_core_web_lg") 
+
+    def preprocess(text):
+        # remove stop words and lemmatize the text
+        excluded_tags = {"NOUN", "PROPN"}
+        doc = nlp(text)
+        filtered_tokens = []
+        for token in doc:
+            if token.is_stop or token.is_punct or token.pos_ not in excluded_tags:
+                continue
+            filtered_tokens.append(token.lemma_)
+        
+        return (filtered_tokens)
+    helper = ''
+    pp = set(preprocess(sample_text))
+    for i in pp:
+        for j in glossary.keys():
+            if i in j:
+                helper +="<b>" +j + " : " + "</b>" + glossary[j] + "<br/> " 
+    chat.message_by_assistant(sample_text, type='glossary', help=helper)
+   
+
 
 
 chat.set_processinput(processinput)
