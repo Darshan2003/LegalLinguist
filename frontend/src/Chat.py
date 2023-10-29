@@ -2,8 +2,64 @@ import streamlit as st
 import requests
 import base64
 import time
-from src.database import upload_file_details, get_db
+from src.database import upload_file_details, get_db, delete_all_records
 from src.utils import db
+
+conn = get_db()
+language_codes = {
+    'Arabic': 'ar_AR',
+    'Czech': 'cs_CZ',
+    'German': 'de_DE',
+    'English': 'en_XX',
+    'Spanish': 'es_XX',
+    'Estonian': 'et_EE',
+    'Finnish': 'fi_FI',
+    'French': 'fr_XX',
+    'Gujarati': 'gu_IN',
+    'Hindi': 'hi_IN',
+    'Italian': 'it_IT',
+    'Japanese': 'ja_XX',
+    'Kazakh': 'kk_KZ',
+    'Korean': 'ko_KR',
+    'Lithuanian': 'lt_LT',
+    'Latvian': 'lv_LV',
+    'Burmese': 'my_MM',
+    'Nepali': 'ne_NP',
+    'Dutch': 'nl_XX',
+    'Romanian': 'ro_RO',
+    'Russian': 'ru_RU',
+    'Sinhala': 'si_LK',
+    'Turkish': 'tr_TR',
+    'Vietnamese': 'vi_VN',
+    'Chinese': 'zh_CN',
+    'Afrikaans': 'af_ZA',
+    'Azerbaijani': 'az_AZ',
+    'Bengali': 'bn_IN',
+    'Persian': 'fa_IR',
+    'Hebrew': 'he_IL',
+    'Croatian': 'hr_HR',
+    'Indonesian': 'id_ID',
+    'Georgian': 'ka_GE',
+    'Khmer': 'km_KH',
+    'Macedonian': 'mk_MK',
+    'Malayalam': 'ml_IN',
+    'Mongolian': 'mn_MN',
+    'Marathi': 'mr_IN',
+    'Polish': 'pl_PL',
+    'Pashto': 'ps_AF',
+    'Portuguese': 'pt_XX',
+    'Swedish': 'sv_SE',
+    'Swahili': 'sw_KE',
+    'Tamil': 'ta_IN',
+    'Telugu': 'te_IN',
+    'Thai': 'th_TH',
+    'Tagalog': 'tl_XX',
+    'Ukrainian': 'uk_UA',
+    'Urdu': 'ur_PK',
+    'Xhosa': 'xh_ZA',
+    'Galician': 'gl_ES',
+    'Slovene': 'sl_SI'
+}
 
 
 class Chat():
@@ -11,7 +67,7 @@ class Chat():
 
         self.processinput = processinput
         self.input = None
-        self.URL = 'https://c651-34-145-110-134.ngrok-free.app'
+        self.URL = 'https://6952-34-83-51-35.ngrok-free.app'
 
         if 'doc' not in st.session_state:
             st.session_state['doc'] = None
@@ -53,7 +109,8 @@ class Chat():
                         message['text'], accept_multiple_files=True)
                     if temp_file is not None:
                         self.uploaded_files.append(temp_file)
-                    
+                        st.session_state['language']  = st.selectbox('Enter the language', language_codes.keys())
+
 
                 elif message['type'] == 'image':
                     if message['label'] != '':
@@ -61,6 +118,14 @@ class Chat():
                             st.image(message['image'])
                     else:
                         st.image(message['image'])
+
+                elif message['type'] == 'glossary':
+                    st.write(message['text'])
+                    if help != '':
+                        with st.expander("Glossary"):
+                            st.markdown( message['help'],unsafe_allow_html=True)
+                        
+
 
     def upload_file(self, uploaded_files):
         # single_file = st.session_state['doc'][index]
@@ -75,7 +140,8 @@ class Chat():
             f'{self.URL}/uploadfiles',
             files= files,
             data={
-                'email': st.session_state['verif_email']
+                'email': st.session_state['verif_email'],
+                'lang': language_codes[st.session_state['language']],
             }
         )
         print(response.text)
@@ -137,7 +203,7 @@ class Chat():
             'role': 'user',
         })
 
-    def message_by_assistant(self, message, type='text', label=''):
+    def message_by_assistant(self, message, type='text', label='', help=''):
         if type == 'file':
             st.session_state['messages'].append({
                 'type': 'file',
@@ -157,6 +223,13 @@ class Chat():
                 'role': 'assistant',
                 'label': label
             })
+        elif type=='glossary':
+            st.session_state['messages'].append({
+                'type': 'glossary',
+                'text': message,
+                'role': 'assistant',
+                'help': help
+            })
 
     def clear_chat(self):
         st.session_state['messages'] = []
@@ -165,31 +238,15 @@ class Chat():
         self.message_by_assistant(
             'Hello there! I am your personal assistant. How can I help you?')
         self.message_by_assistant('Upload your file here:', type='file')
+        delete_all_records(conn, st.session_state['verif_email'])
 
-    # def upload_create_embeding(self):
-    #     if self.uploaded_files is not None and len(self.uploaded_files) > 0:
-    #         with st.spinner("Uploading and processing the file..."):
-                
-    #             st.session_state['id'] =self.upload_file(self.uploaded_files[-1])
-    #             # st.session_state['id'] ='d32e3a0e-75c3-11ee-b75b-42004e494300'
-    #     i = 0
-
-
-    #     while i < len(st.session_state['messages']):
-    #         if st.session_state['messages'][i]['type'] ==  'file':
-    #             del st.session_state['messages'][i]
-    #         else:
-    #             i += 1
-
-    #     # print(self.id)
-        
     def upload_create_embeding(self):
-        # if self.uploaded_files is not None and len(self.uploaded_files) > 0:
-        #     with st.spinner("Uploading and processing the file..."):
-                
-        #         st.session_state['id'] =self.upload_file(self.uploaded_files[-1])
-        st.session_state['id'] ='fe11f67c-75e4-11ee-b88c-42004e494300'
+        if self.uploaded_files is not None and len(self.uploaded_files) > 0:
+            with st.spinner("Uploading and processing the file..."):
+                st.session_state['id'] =self.upload_file(self.uploaded_files[-1])
+        # st.session_state['id'] ='fe11f67c-75e4-11ee-b88c-42004e494300'
         i = 0
+
 
 
         while i < len(st.session_state['messages']):
